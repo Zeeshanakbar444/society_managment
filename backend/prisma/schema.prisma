@@ -1,0 +1,96 @@
+// User Roles: ADMIN, MEMBER
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum ResidentType {
+  OWNER
+  TENANT
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+  PARTIAL
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Street {
+  id     String  @id @default(uuid())
+  name   String  @unique // e.g., "Street 10"
+  houses House[]
+}
+
+model House {
+  id          String      @id @default(uuid())
+  houseNumber String      @unique
+  streetId    String
+  street      Street      @relation(fields: [streetId], references: [id])
+  residents   User[]
+  bills       Bill[]
+  complaints  Complaint[]
+}
+
+model User {
+  id           String       @id @default(uuid()) // Firebase UID
+  fullName     String
+  phoneNumber  String       @unique
+  email        String?      @unique
+  role         Role         @default(MEMBER)
+  residentType ResidentType @default(OWNER)
+  houseId      String?
+  house        House?       @relation(fields: [houseId], references: [id] , onDelete: Cascade)
+  complaints   Complaint[]
+  createdAt    DateTime     @default(now())
+}
+
+model Bill {
+  id           String        @id @default(uuid())
+  amount       Decimal
+  dueDate      DateTime
+  status       PaymentStatus @default(UNPAID)
+  billingMonth DateTime // Represented as first day of month
+  houseId      String
+  house        House         @relation(fields: [houseId], references: [id])
+  paidAt       DateTime?
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  title       String // e.g., "Security Salary"
+  amount      Decimal
+  category    String // Maintenance, Utility, Salary
+  date        DateTime @default(now())
+  description String?
+}
+
+model Complaint {
+  id          String          @id @default(uuid())
+  subject     String
+  description String
+  status      ComplaintStatus @default(OPEN)
+  adminNote   String?
+  houseId     String
+  house       House           @relation(fields: [houseId], references: [id])
+  userId      String
+  user        User            @relation(fields: [userId], references: [id],onDelete: Cascade)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  
+}

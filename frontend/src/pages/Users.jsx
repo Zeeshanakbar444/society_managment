@@ -1,0 +1,188 @@
+import React, { useState, useEffect } from "react";
+import { FaEdit, FaTrash, FaUserShield, FaUser } from "react-icons/fa";
+import api from "../lib/api";
+import axios from "axios";
+
+const Users = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editingUser, setEditingUser] = useState(null);
+  const [updatedRole, setUpdatedRole] = useState("");
+
+  const fetchUsers = async () => {
+    try {
+      const response = await api.get("/residents");
+      setUsers(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // Edit user role
+  const handleEdit = (user) => {
+    setEditingUser(user);
+    setUpdatedRole(user.role);
+  };
+
+  // Update user role
+  const handleUpdate = async () => {
+    try {
+      await api.patch(`/residents/${editingUser.id}`, { role: updatedRole });
+      setEditingUser(null);
+      fetchUsers();
+    } catch (error) {
+      console.error("Error updating user role:", error);
+      alert("Failed to update user role");
+    }
+  };
+
+  // Delete user
+  const handleDelete = async (id) => {
+    
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      try {
+        // await api.delete(`/residents/${id}`);
+        await api.get(`/user`);
+        fetchUsers();
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        alert("Failed to delete user");
+      }
+    }
+  };
+ 
+
+  if (loading) {
+    return (
+      <div className="p-6 bg-gray-100 min-h-screen flex items-center justify-center">
+        <div className="text-xl font-semibold text-gray-600">Loading Users...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Admin User Management</h1>
+        <button
+          onClick={fetchUsers}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          Refresh Data
+        </button>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+          <thead className="bg-blue-600 text-white">
+            <tr>
+              <th className="py-3 px-6 text-left">Name</th>
+              <th className="py-3 px-6 text-left">Email</th>
+              <th className="py-3 px-6 text-left">Role</th>
+              <th className="py-3 px-6 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="py-10 text-center text-gray-500">
+                  No users found in the database.
+                </td>
+              </tr>
+            ) : (
+              users.map((user) => (
+                <tr
+                  key={user.id}
+                  className="border-b hover:bg-gray-50 transition"
+                >
+                  <td className="py-4 px-6 font-medium">{user.fullName || "N/A"}</td>
+                  <td className="py-4 px-6 text-gray-600">{user.email || "N/A"}</td>
+                  <td className="py-4 px-6">
+                    <div className="flex items-center gap-2">
+                      {user.role === "ADMIN" ? (
+                        <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
+                          <FaUserShield /> Admin
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold">
+                          <FaUser /> Member
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <div className="flex justify-center gap-4">
+                      <button
+                        onClick={() => handleEdit(user)}
+                        className="text-yellow-500 hover:text-yellow-700 p-2 hover:bg-yellow-50 rounded-full transition"
+                        title="Edit Role"
+                      >
+                        <FaEdit size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-full transition"
+                        title="Delete User"
+                      >
+                        <FaTrash size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Edit Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-in fade-in duration-200">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-96 transform transition-all">
+            <h2 className="text-xl font-bold mb-2">
+              Update User Role
+            </h2>
+            <p className="text-gray-500 text-sm mb-6">
+              Changing role for <span className="font-semibold text-gray-700">{editingUser.fullName}</span>
+            </p>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Select New Role</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                value={updatedRole}
+                onChange={(e) => setUpdatedRole(e.target.value)}
+              >
+                <option value="ADMIN">ADMIN</option>
+                <option value="MEMBER">MEMBER</option>
+              </select>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setEditingUser(null)}
+                className="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdate}
+                className="px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-md shadow-blue-200 transition"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Users;

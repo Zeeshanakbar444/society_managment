@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Get all bills
+// Get all billls
 router.get('/', async (req, res) => {
     try {
         const bills = await prisma.bill.findMany({

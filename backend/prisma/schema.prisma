@@ -41,7 +41,7 @@ model House {
   id          String      @id @default(uuid())
   houseNumber String      @unique
   streetId    String
-  street      Street      @relation(fields: [streetId], references: [id])
+  street      Street      @relation(fields: [streetId], references: [id] , onDelete: Cascade)
   residents   User[]
   bills       Bill[]
   complaints  Complaint[]
@@ -67,7 +67,7 @@ model Bill {
   status       PaymentStatus @default(UNPAID)
   billingMonth DateTime // Represented as first day of month
   houseId      String
-  house        House         @relation(fields: [houseId], references: [id])
+  house        House         @relation(fields: [houseId], references: [id] , onDelete: Cascade)
   paidAt       DateTime?
 }
 
@@ -87,7 +87,7 @@ model Complaint {
   status      ComplaintStatus @default(OPEN)
   adminNote   String?
   houseId     String
-  house       House           @relation(fields: [houseId], references: [id])
+  house       House           @relation(fields: [houseId], references: [id],onDelete: Cascade)
   userId      String
   user        User            @relation(fields: [userId], references: [id],onDelete: Cascade)
   createdAt   DateTime        @default(now())

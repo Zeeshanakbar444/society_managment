@@ -1,5 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import admin from 'firebase-admin';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -16,7 +17,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Create/Update resident (Upsert based on Firebase UID)
+// Create resident
 router.post('/', async (req, res) => {
     const { id, fullName, phoneNumber, email, residentType, houseId } = req.body;
     try {
@@ -66,19 +67,49 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Update resident (role, residentType, houseId, fullName, phoneNumber, email)
+router.patch('/:id', async (req, res) => {
+    const { fullName, phoneNumber, email, residentType, houseId, role } = req.body;
+    try {
+        const user = await prisma.user.update({
+            where: { id: req.params.id },
+            data: {
+                ...(fullName !== undefined && { fullName }),
+                ...(phoneNumber !== undefined && { phoneNumber }),
+                ...(email !== undefined && { email }),
+                ...(residentType !== undefined && { residentType }),
+                ...(houseId !== undefined && { houseId }),
+                ...(role !== undefined && { role }),
+            },
+            include: { house: { include: { street: true } } },
+        });
+        res.json(user);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
-// delete user account 
-// Delete resident
-// router.delete('/:id', async (req, res) => {
-//     try {
-//         await prisma.user.delete({
-//             where: { id: req.params.id },
-//         });
-//         res.status(204).send();
-//     } catch (error) {
-//         res.status(400).json({ error: error.message });
-//     }
-// });
+// Delete resident — removes from Firebase Auth AND the database
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        // 1. Delete from Firebase Authentication (ignore if user doesn't exist there)
+        try {
+            await admin.auth().deleteUser(id);
+        } catch (firebaseErr) {
+            // user-not-found is acceptable (e.g. seeded users without Firebase account)
+            if (firebaseErr.code !== 'auth/user-not-found') {
+                return res.status(500).json({ error: `Firebase deletion failed: ${firebaseErr.message}` });
+            }
+        }
 
+        // 2. Delete from Prisma database
+        await prisma.user.delete({ where: { id } });
+
+        res.status(204).send();
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
 export default router;

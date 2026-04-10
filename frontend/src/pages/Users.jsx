@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaUserShield, FaUser } from "react-icons/fa";
 import api from "../lib/api";
-import axios from "axios";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -13,9 +12,9 @@ const Users = () => {
     try {
       const response = await api.get("/residents");
       setUsers(response.data);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -24,13 +23,11 @@ const Users = () => {
     fetchUsers();
   }, []);
 
-  // Edit user role
   const handleEdit = (user) => {
     setEditingUser(user);
     setUpdatedRole(user.role);
   };
 
-  // Update user role
   const handleUpdate = async () => {
     try {
       await api.patch(`/residents/${editingUser.id}`, { role: updatedRole });
@@ -42,21 +39,17 @@ const Users = () => {
     }
   };
 
-  // Delete user
   const handleDelete = async (id) => {
-    
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        // await api.delete(`/residents/${id}`);
-        await api.get(`/user`);
+        await api.delete(`/residents/${id}`);
         fetchUsers();
       } catch (error) {
         console.error("Error deleting user:", error);
-        alert("Failed to delete user");
+        alert(error.response?.data?.error || "Failed to delete user");
       }
     }
   };
- 
 
   if (loading) {
     return (
@@ -84,6 +77,8 @@ const Users = () => {
             <tr>
               <th className="py-3 px-6 text-left">Name</th>
               <th className="py-3 px-6 text-left">Email</th>
+              <th className="py-3 px-6 text-left">Phone</th>
+              <th className="py-3 px-6 text-left">House</th>
               <th className="py-3 px-6 text-left">Role</th>
               <th className="py-3 px-6 text-center">Actions</th>
             </tr>
@@ -91,18 +86,17 @@ const Users = () => {
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan="4" className="py-10 text-center text-gray-500">
+                <td colSpan="6" className="py-10 text-center text-gray-500">
                   No users found in the database.
                 </td>
               </tr>
             ) : (
               users.map((user) => (
-                <tr
-                  key={user.id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
+                <tr key={user.id} className="border-b hover:bg-gray-50 transition">
                   <td className="py-4 px-6 font-medium">{user.fullName || "N/A"}</td>
                   <td className="py-4 px-6 text-gray-600">{user.email || "N/A"}</td>
+                  <td className="py-4 px-6 text-gray-600">{user.phoneNumber || "N/A"}</td>
+                  <td className="py-4 px-6 text-gray-600">{user.house?.houseNumber || "N/A"}</td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
                       {user.role === "ADMIN" ? (
@@ -141,21 +135,21 @@ const Users = () => {
         </table>
       </div>
 
-      {/* Edit Modal */}
+      {/* Edit Role Modal */}
       {editingUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-in fade-in duration-200">
-          <div className="bg-white rounded-xl shadow-2xl p-6 w-96 transform transition-all">
-            <h2 className="text-xl font-bold mb-2">
-              Update User Role
-            </h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-96">
+            <h2 className="text-xl font-bold mb-2">Update User Role</h2>
             <p className="text-gray-500 text-sm mb-6">
-              Changing role for <span className="font-semibold text-gray-700">{editingUser.fullName}</span>
+              Changing role for{" "}
+              <span className="font-semibold text-gray-700">{editingUser.fullName}</span>
             </p>
-
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Select New Role</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select New Role
+              </label>
               <select
-                className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
                 value={updatedRole}
                 onChange={(e) => setUpdatedRole(e.target.value)}
               >
@@ -163,7 +157,6 @@ const Users = () => {
                 <option value="MEMBER">MEMBER</option>
               </select>
             </div>
-
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setEditingUser(null)}

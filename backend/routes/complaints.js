@@ -12,6 +12,7 @@ router.get('/', async (req, res) => {
                 user: true,
                 house: { include: { street: true } },
             },
+            orderBy: { createdAt: 'desc' },
         });
         res.json(complaints);
     } catch (error) {
@@ -19,17 +20,12 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Create complaint
 router.post('/', async (req, res) => {
     const { subject, description, houseId, userId } = req.body;
     try {
         const complaint = await prisma.complaint.create({
-            data: {
-                subject,
-                description,
-                houseId,
-                userId,
-                status: 'OPEN',
-            },
+            data: { subject, description, houseId, userId, status: 'OPEN' },
         });
         res.status(201).json(complaint);
     } catch (error) {
@@ -37,7 +33,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Update complaint status (State Machine logic)
+// Update complaint status (Admin only — state machine)
 router.patch('/:id/status', async (req, res) => {
     const { status, adminNote } = req.body;
     try {
@@ -49,7 +45,7 @@ router.patch('/:id/status', async (req, res) => {
             return res.status(404).json({ error: 'Complaint not found' });
         }
 
-        // Business Logic: To CLOSE, an adminNote is required
+        // To CLOSE, an adminNote is required
         if (status === 'CLOSED' && !adminNote && !currentComplaint.adminNote) {
             return res.status(400).json({ error: 'Closing note is required from Admin before closing a complaint.' });
         }
@@ -68,10 +64,3 @@ router.patch('/:id/status', async (req, res) => {
 });
 
 export default router;
-
-
-
-router.get("/getUser" ,async (req,res)=>{
-    const user = await prisma.user.findMany({})
-    return res.status(200).json({data})
-})

@@ -24,13 +24,13 @@ export default function Infrastructure() {
     };
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-6 md:space-y-10">
             <header>
-                <h2 className="text-3xl font-bold text-slate-900">Infrastructure</h2>
-                <p className="text-slate-500 mt-1">Manage streets and houses in the community.</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900">Infrastructure</h2>
+                <p className="text-slate-500 mt-1 text-sm md:text-base">Manage streets and houses in the community.</p>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                 {/* Streets Section */}
                 <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
@@ -40,7 +40,7 @@ export default function Infrastructure() {
                         </h3>
                     </div>
 
-                    <form onSubmit={handleAddStreet} className="flex gap-2 mb-6">
+                    <form onSubmit={handleAddStreet} className="flex flex-col sm:flex-row gap-2 mb-6">
                         <input
                             type="text"
                             placeholder="Enter Street Name (e.g. Street 10)"
@@ -74,7 +74,7 @@ export default function Infrastructure() {
                     </div>
 
                     <form onSubmit={handleAddHouse} className="space-y-4 mb-6">
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                             <input
                                 type="text"
                                 placeholder="House Number"

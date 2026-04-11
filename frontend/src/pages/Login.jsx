@@ -23,10 +23,10 @@ export default function Login() {
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
             <div className="max-w-md w-full bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-                <div className="p-8">
-                    <div className="text-center mb-10">
-                        <h1 className="text-3xl font-extrabold text-primary-600 tracking-tight">Society OS</h1>
-                        <p className="text-slate-500 mt-2">Welcome back! Please login to continue.</p>
+                <div className="p-6 md:p-8">
+                    <div className="text-center mb-6 md:mb-10">
+                        <h1 className="text-2xl md:text-3xl font-extrabold text-primary-600 tracking-tight">Society OS</h1>
+                        <p className="text-slate-500 mt-2 text-sm md:text-base">Welcome back! Please login to continue.</p>
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-6">

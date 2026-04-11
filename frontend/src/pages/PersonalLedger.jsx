@@ -19,10 +19,10 @@ export default function PersonalLedger() {
     const totalUnpaid = unpaidBills.reduce((sum, b) => sum + Number(b.amount), 0);
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
             <header>
-                <h2 className="text-3xl font-bold text-slate-900">Personal Ledger</h2>
-                <p className="text-slate-500 mt-1">Your financial summary and payment history.</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900">Personal Ledger</h2>
+                <p className="text-slate-500 mt-1 text-sm md:text-base">Your financial summary and payment history.</p>
             </header>
 
             {/* Summary Cards */}
@@ -69,7 +69,7 @@ export default function PersonalLedger() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                 {/* Payment History */}
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                     <h3 className="text-lg font-bold mb-6 flex items-center gap-2">

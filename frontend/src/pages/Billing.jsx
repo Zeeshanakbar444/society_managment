@@ -67,25 +67,25 @@ Thank you for your payment!
     const displayBills = isAdmin ? bills : bills?.filter(b => b.houseNumber === profile?.houseNumber) || [];
 
     return (
-        <div className="space-y-8">
-            <header className="flex items-center justify-between">
+        <div className="space-y-6 md:space-y-8">
+            <header className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900">{isAdmin ? 'Financials' : 'My Dues'}</h2>
-                    <p className="text-slate-500 mt-1">{isAdmin ? 'Manage community billing and expenses.' : 'View your payment history and outstanding dues.'}</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900">{isAdmin ? 'Financials' : 'My Dues'}</h2>
+                    <p className="text-slate-500 mt-1 text-sm md:text-base">{isAdmin ? 'Manage community billing and expenses.' : 'View your payment history and outstanding dues.'}</p>
                 </div>
                 {isAdmin && (
                     <button
                         onClick={generateBills}
                         disabled={genLoading}
-                        className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-primary-700 transition-all shadow-lg shadow-primary-200 flex items-center gap-2 disabled:opacity-50"
+                        className="bg-primary-600 text-white px-4 py-2 md:px-6 md:py-2.5 rounded-xl font-semibold hover:bg-primary-700 transition-all shadow-lg shadow-primary-200 flex items-center gap-2 disabled:opacity-50 text-sm md:text-base"
                     >
-                        <Calendar size={20} />
+                        <Calendar size={18} />
                         {genLoading ? 'Generating...' : 'Generate New Cycle'}
                     </button>
                 )}
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
                 {/* Billing Overview */}
                 <div className="lg:col-span-2 space-y-6">
                     <div className="flex items-center justify-between">
@@ -97,74 +97,76 @@ Thank you for your payment!
                     </div>
 
                     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-                        <table className="w-full text-left">
-                            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm font-medium">
-                                <tr>
-                                    <th className="px-6 py-4">House No</th>
-                                    <th className="px-6 py-4">Month</th>
-                                    <th className="px-6 py-4">Amount</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                                {displayBills.slice(0, 10).map((bill) => (
-                                    <tr key={bill.id} className="hover:bg-slate-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-slate-700">{bill.house?.houseNumber || 'N/A'}</td>
-                                        <td className="px-6 py-4 text-slate-500">{new Date(bill.billingMonth).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</td>
-                                        <td className="px-6 py-4 text-slate-700 font-semibold">${bill.amount}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${bill.status === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                                                }`}>
-                                                {bill.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {isAdmin && bill.status !== 'PAID' && (
-                                                <button
-                                                    onClick={() => markPaid(bill.id)}
-                                                    className="text-primary-600 text-sm font-bold hover:underline"
-                                                >
-                                                    Mark Paid
-                                                </button>
-                                            )}
-                                            {!isAdmin && bill.status === 'PAID' && (
-                                                <button
-                                                    onClick={() => downloadReceipt(bill)}
-                                                    className="flex items-center gap-1 text-green-600 text-sm font-bold hover:underline"
-                                                >
-                                                    <FileText size={14} />
-                                                    Receipt
-                                                </button>
-                                            )}
-                                        </td>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left min-w-[480px]">
+                                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm font-medium">
+                                    <tr>
+                                        <th className="px-4 md:px-6 py-3 md:py-4">House No</th>
+                                        <th className="px-4 md:px-6 py-3 md:py-4">Month</th>
+                                        <th className="px-4 md:px-6 py-3 md:py-4">Amount</th>
+                                        <th className="px-4 md:px-6 py-3 md:py-4">Status</th>
+                                        <th className="px-4 md:px-6 py-3 md:py-4">Action</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {displayBills.slice(0, 10).map((bill) => (
+                                        <tr key={bill.id} className="hover:bg-slate-50 transition-colors">
+                                            <td className="px-4 md:px-6 py-3 md:py-4 font-medium text-slate-700 text-sm">{bill.house?.houseNumber || 'N/A'}</td>
+                                            <td className="px-4 md:px-6 py-3 md:py-4 text-slate-500 text-sm">{new Date(bill.billingMonth).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</td>
+                                            <td className="px-4 md:px-6 py-3 md:py-4 text-slate-700 font-semibold text-sm">${bill.amount}</td>
+                                            <td className="px-4 md:px-6 py-3 md:py-4">
+                                                <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${bill.status === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                                    }`}>
+                                                    {bill.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 md:px-6 py-3 md:py-4">
+                                                {isAdmin && bill.status !== 'PAID' && (
+                                                    <button
+                                                        onClick={() => markPaid(bill.id)}
+                                                        className="text-primary-600 text-sm font-bold hover:underline"
+                                                    >
+                                                        Mark Paid
+                                                    </button>
+                                                )}
+                                                {!isAdmin && bill.status === 'PAID' && (
+                                                    <button
+                                                        onClick={() => downloadReceipt(bill)}
+                                                        className="flex items-center gap-1 text-green-600 text-sm font-bold hover:underline"
+                                                    >
+                                                        <FileText size={14} />
+                                                        Receipt
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
                 {/* Expense Summary - Admin Only */}
                 {isAdmin && (
-                <div className="space-y-6">
-                    <h3 className="text-lg font-semibold text-slate-800">Expense Ledger</h3>
-                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                        {expenses?.map((expense) => (
-                            <div key={expense.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-50 bg-slate-50/50">
-                                <div>
-                                    <p className="text-sm font-bold text-slate-800">{expense.title}</p>
-                                    <p className="text-xs text-slate-400">{expense.category} • {new Date(expense.date).toLocaleDateString()}</p>
+                    <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-slate-800">Expense Ledger</h3>
+                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            {expenses?.map((expense) => (
+                                <div key={expense.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-50 bg-slate-50/50">
+                                    <div>
+                                        <p className="text-sm font-bold text-slate-800">{expense.title}</p>
+                                        <p className="text-xs text-slate-400">{expense.category} • {new Date(expense.date).toLocaleDateString()}</p>
+                                    </div>
+                                    <p className="font-bold text-red-500">-${expense.amount}</p>
                                 </div>
-                                <p className="font-bold text-red-500">-${expense.amount}</p>
-                            </div>
-                        ))}
-                        <button className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 text-sm font-medium hover:border-primary-300 hover:text-primary-500 transition-all flex items-center justify-center gap-2">
-                            <DollarSign size={16} />
-                            Log New Expense
-                        </button>
+                            ))}
+                            <button className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 text-sm font-medium hover:border-primary-300 hover:text-primary-500 transition-all flex items-center justify-center gap-2">
+                                <DollarSign size={16} />
+                                Log New Expense
+                            </button>
+                        </div>
                     </div>
-                </div>
                 )}
             </div>
         </div>

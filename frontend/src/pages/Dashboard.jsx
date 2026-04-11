@@ -43,11 +43,11 @@ export default function Dashboard() {
     ];
 
     return (
-        <div className="space-y-10">
-            <header className="flex items-center justify-between">
+        <div className="space-y-6 md:space-y-10">
+            <header className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900">{isAdmin ? 'Admin Dashboard' : `Welcome, ${profile?.fullName}`}</h2>
-                    <p className="text-slate-500 mt-1">{isAdmin ? 'Community overview and quick actions.' : 'Manage your community dues and grievances.'}</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900">{isAdmin ? 'Admin Dashboard' : `Welcome, ${profile?.fullName}`}</h2>
+                    <p className="text-slate-500 mt-1 text-sm md:text-base">{isAdmin ? 'Community overview and quick actions.' : 'Manage your community dues and grievances.'}</p>
                 </div>
                 <button
                     onClick={() => auth.signOut()}
@@ -58,9 +58,9 @@ export default function Dashboard() {
                 </button>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                 {stats.map((stat, i) => (
-                    <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
+                    <div key={i} className="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
                         <div>
                             <p className="text-slate-500 text-sm font-medium">{stat.label}</p>
                             <p className="text-2xl font-bold mt-2 text-slate-900">{stat.value}</p>
@@ -72,7 +72,7 @@ export default function Dashboard() {
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
                 <div className="lg:col-span-2 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-xl font-bold text-slate-800">{isAdmin ? 'Recent Activity' : 'Your Recent Complaints'}</h3>

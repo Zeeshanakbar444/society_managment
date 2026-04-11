@@ -14,13 +14,13 @@ export default function Reports() {
     const categories = [...new Set(expenses.map(e => e.category))];
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-6 md:space-y-10">
             <header>
-                <h2 className="text-3xl font-bold text-slate-900">Financial Reports</h2>
-                <p className="text-slate-500 mt-1">Deep dive into community revenue and expenditures.</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900">Financial Reports</h2>
+                <p className="text-slate-500 mt-1 text-sm md:text-base">Deep dive into community revenue and expenditures.</p>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                 {/* Revenue vs Expenses */}
                 <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
                     <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
@@ -70,11 +70,11 @@ export default function Reports() {
                 </div>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+            <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm">
                 <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                     <FileText className="text-slate-700" /> Category-wise Expenses
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                     {categories.map(cat => (
                         <div key={cat} className="p-4 border border-slate-100 rounded-2xl bg-slate-50 text-center">
                             <p className="text-xs text-slate-400 uppercase font-bold tracking-widest leading-loose">{cat}</p>

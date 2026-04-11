@@ -29,13 +29,13 @@ export default function Profile() {
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
             <header>
-                <h2 className="text-3xl font-bold text-slate-900">My Profile</h2>
-                <p className="text-slate-500 mt-1">View and manage your personal information.</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900">My Profile</h2>
+                <p className="text-slate-500 mt-1 text-sm md:text-base">View and manage your personal information.</p>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
                 {/* Profile Card */}
                 <div className="lg:col-span-1">
                     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center">
@@ -47,7 +47,7 @@ export default function Profile() {
                             {profile?.role}
                         </span>
                         <p className="text-slate-400 text-sm mt-1">{profile?.residentType}</p>
-                        
+
                         <div className="mt-6 pt-6 border-t border-slate-100 text-left space-y-3">
                             <div className="flex items-center gap-3 text-slate-600">
                                 <Home size={18} className="text-slate-400" />
@@ -106,7 +106,7 @@ export default function Profile() {
                                         className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition-all"
                                     />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
                                         <input
@@ -144,7 +144,7 @@ export default function Profile() {
                                     <p className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Full Name</p>
                                     <p className="text-slate-800 font-medium">{profile?.fullName}</p>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="p-4 bg-slate-50 rounded-xl">
                                         <p className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Email</p>
                                         <p className="text-slate-800 font-medium">{profile?.email || 'Not provided'}</p>
@@ -154,7 +154,7 @@ export default function Profile() {
                                         <p className="text-slate-800 font-medium">{profile?.phoneNumber}</p>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="p-4 bg-slate-50 rounded-xl">
                                         <p className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Resident Type</p>
                                         <p className="text-slate-800 font-medium">{profile?.residentType}</p>

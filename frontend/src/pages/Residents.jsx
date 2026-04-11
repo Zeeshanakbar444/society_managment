@@ -130,10 +130,10 @@ export default function Residents() {
 
     // ─── Pill Tab Switch ────────────────────────────────────────────────────
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
             <header>
-                <h2 className="text-3xl font-bold text-slate-900">Residents &amp; Houses</h2>
-                <p className="text-slate-500 mt-1">Manage member profiles and house assignments.</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900">Residents &amp; Houses</h2>
+                <p className="text-slate-500 mt-1 text-sm md:text-base">Manage member profiles and house assignments.</p>
             </header>
 
             {/* Tab Switcher */}
@@ -154,7 +154,7 @@ export default function Residents() {
 
             {/* ═══════════════ RESIDENTS TAB ═══════════════ */}
             {activeTab === 'residents' && (
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
                     {/* Resident Form */}
                     <section className="xl:col-span-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
                         <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
@@ -178,7 +178,7 @@ export default function Residents() {
                                     className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition-all"
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
                                     <input
@@ -256,7 +256,7 @@ export default function Residents() {
                         ) : residents.length === 0 ? (
                             <div className="bg-white p-10 rounded-2xl border border-slate-200 text-center text-slate-400">No residents yet.</div>
                         ) : residents.map(resident => (
-                            <div key={resident.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:border-primary-200 transition-colors">
+                            <div key={resident.id} className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 hover:border-primary-200 transition-colors">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center text-primary-600">
                                         <User size={24} />
@@ -299,7 +299,7 @@ export default function Residents() {
 
             {/* ═══════════════ HOUSES TAB ═══════════════ */}
             {activeTab === 'houses' && (
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
                     {/* House Form */}
                     <section className="xl:col-span-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
                         <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">

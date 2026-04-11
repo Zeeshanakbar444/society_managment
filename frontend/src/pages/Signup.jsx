@@ -43,10 +43,10 @@ export default function Signup() {
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
             <div className="max-w-md w-full bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-                <div className="p-8">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-extrabold text-primary-600 tracking-tight">Join Society OS</h1>
-                        <p className="text-slate-500 mt-2">Get started with community management.</p>
+                <div className="p-6 md:p-8">
+                    <div className="text-center mb-6 md:mb-8">
+                        <h1 className="text-2xl md:text-3xl font-extrabold text-primary-600 tracking-tight">Join Society OS</h1>
+                        <p className="text-slate-500 mt-2 text-sm md:text-base">Get started with community management.</p>
                     </div>
 
                     <form onSubmit={handleSignup} className="space-y-4">

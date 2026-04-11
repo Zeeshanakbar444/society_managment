@@ -43,13 +43,13 @@ export default function Complaints() {
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
             <header>
-                <h2 className="text-3xl font-bold text-slate-900">Complaints CMS</h2>
-                <p className="text-slate-500 mt-1">Resolution workflow for community grievances.</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900">Complaints CMS</h2>
+                <p className="text-slate-500 mt-1 text-sm md:text-base">Resolution workflow for community grievances.</p>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
                 {/* Raise Complaint — members only */}
                 {!isAdmin && (
                     <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
@@ -113,13 +113,13 @@ export default function Complaints() {
                             className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-l-4"
                             style={{ borderColor: complaint.status === 'OPEN' ? '#ef4444' : complaint.status === 'RESOLVED' ? '#22c55e' : complaint.status === 'IN_PROGRESS' ? '#eab308' : '#94a3b8' }}
                         >
-                            <div className="flex items-start justify-between">
-                                <div>
+                            <div className="flex flex-wrap items-start justify-between gap-2">
+                                <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-2 mb-1">
                                         {statusIcons[complaint.status]}
                                         <span className="text-xs font-bold uppercase tracking-wider text-slate-400">{complaint.status}</span>
                                     </div>
-                                    <h4 className="text-lg font-bold text-slate-900">{complaint.subject}</h4>
+                                    <h4 className="text-base md:text-lg font-bold text-slate-900">{complaint.subject}</h4>
                                     <p className="text-slate-600 mt-2 text-sm">{complaint.description}</p>
                                     {complaint.adminNote && (
                                         <p className="mt-2 text-xs italic text-slate-400 bg-slate-50 px-3 py-1.5 rounded-lg">
@@ -127,7 +127,7 @@ export default function Complaints() {
                                         </p>
                                     )}
                                 </div>
-                                <div className="text-right text-xs text-slate-400 shrink-0 ml-4">
+                                <div className="text-right text-xs text-slate-400 shrink-0">
                                     {new Date(complaint.createdAt).toLocaleDateString()}
                                     <p className="mt-1 font-bold text-slate-500">#{complaint.house?.houseNumber || 'N/A'}</p>
                                 </div>

@@ -34,12 +34,17 @@ app.use('/api/complaints', verifyToken, complaintRoutes);
 app.use('/api/seed', verifyToken, seedRoutes);
 app.use('/api/user', verifyToken, seedRoutes);
 
+// Export the app for Vercel
+export default app;
+
 const PORT = process.env.PORT || 5000;
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}

@@ -60,9 +60,9 @@ const Users = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Admin User Management</h1>
+    <div className="p-4 md:p-6 bg-gray-100 min-h-screen">
+      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+        <h1 className="text-xl md:text-2xl font-bold">Admin User Management</h1>
         <button
           onClick={fetchUsers}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
@@ -71,8 +71,8 @@ const Users = () => {
         </button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+      <div className="overflow-x-auto -mx-4 md:mx-0">
+        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden min-w-[640px]">
           <thead className="bg-blue-600 text-white">
             <tr>
               <th className="py-3 px-6 text-left">Name</th>
@@ -137,8 +137,8 @@ const Users = () => {
 
       {/* Edit Role Modal */}
       {editingUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-2xl p-6 w-96">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-2">Update User Role</h2>
             <p className="text-gray-500 text-sm mb-6">
               Changing role for{" "}

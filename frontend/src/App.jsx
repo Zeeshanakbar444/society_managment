@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import PersonalLedger from './pages/PersonalLedger';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Users from "./pages/Users"
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -43,6 +44,7 @@ const Placeholder = ({ title }) => (
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-center" reverseOrder={false} />
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApi } from '../hooks/useApi';
 import api from '../lib/api';
 import { UserPlus, User, Mail, Phone, Home as HomeIcon, Edit2, Trash2, PlusCircle, X, Check, Building2 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 // ─── Residents Section ───────────────────────────────────────────────────────
 export default function Residents() {
@@ -14,12 +15,10 @@ export default function Residents() {
         fullName: '', email: '', phoneNumber: '', password: '', residentType: 'OWNER', houseId: ''
     });
     const [editingResident, setEditingResident] = useState(null); // resident object being edited
-    const [residentMsg, setResidentMsg] = useState(null);
 
     // ── House form state ──
     const [houseForm, setHouseForm] = useState({ houseNumber: '', streetId: '' });
     const [editingHouse, setEditingHouse] = useState(null); // house object being edited
-    const [houseMsg, setHouseMsg] = useState(null);
 
     const [activeTab, setActiveTab] = useState('residents'); // 'residents' | 'houses'
 
@@ -27,29 +26,40 @@ export default function Residents() {
 
     const handleResidentSubmit = async (e) => {
         e.preventDefault();
-        setResidentMsg(null);
         try {
             if (editingResident) {
                 // Update existing resident
-                await api.patch(`/residents/${editingResident.id}`, {
-                    fullName: residentForm.fullName,
-                    email: residentForm.email,
-                    phoneNumber: residentForm.phoneNumber,
-                    residentType: residentForm.residentType,
-                    houseId: residentForm.houseId || null,
-                });
-                setResidentMsg({ type: 'success', text: 'Resident updated successfully!' });
+                await toast.promise(
+                    api.patch(`/residents/${editingResident.id}`, {
+                        fullName: residentForm.fullName,
+                        email: residentForm.email,
+                        phoneNumber: residentForm.phoneNumber,
+                        residentType: residentForm.residentType,
+                        houseId: residentForm.houseId || null,
+                    }),
+                    {
+                        loading: 'Updating resident...',
+                        success: 'Resident updated successfully!',
+                        error: (err) => err.response?.data?.error || 'Failed to update resident.'
+                    }
+                );
                 setEditingResident(null);
             } else {
                 // Create new resident via Firebase signup
                 const id = `user_${Math.random().toString(36).substr(2, 9)}`;
-                await api.post('/residents', { id, ...residentForm });
-                setResidentMsg({ type: 'success', text: 'Resident created successfully!' });
+                await toast.promise(
+                    api.post('/residents', { id, ...residentForm }),
+                    {
+                        loading: 'Creating resident...',
+                        success: 'Resident created successfully!',
+                        error: (err) => err.response?.data?.error || 'Failed to create resident.'
+                    }
+                );
             }
             setResidentForm({ fullName: '', email: '', phoneNumber: '', password: '', residentType: 'OWNER', houseId: '' });
             refreshResidents();
         } catch (err) {
-            setResidentMsg({ type: 'error', text: err.response?.data?.error || 'Failed to save resident.' });
+            console.error(err);
         }
     };
 
@@ -63,22 +73,27 @@ export default function Residents() {
             residentType: r.residentType || 'OWNER',
             houseId: r.houseId || '',
         });
-        setResidentMsg(null);
     };
 
     const cancelEditResident = () => {
         setEditingResident(null);
         setResidentForm({ fullName: '', email: '', phoneNumber: '', password: '', residentType: 'OWNER', houseId: '' });
-        setResidentMsg(null);
     };
 
     const deleteResident = async (id) => {
         if (!window.confirm('Delete this resident? All their complaints will also be removed.')) return;
         try {
-            await api.delete(`/residents/${id}`);
+            await toast.promise(
+                api.delete(`/residents/${id}`),
+                {
+                    loading: 'Deleting resident...',
+                    success: 'Resident deleted successfully!',
+                    error: (err) => err.response?.data?.error || 'Failed to delete resident.'
+                }
+            );
             refreshResidents();
         } catch (err) {
-            alert(err.response?.data?.error || 'Failed to delete resident.');
+            console.error(err);
         }
     };
 
@@ -86,45 +101,61 @@ export default function Residents() {
 
     const handleHouseSubmit = async (e) => {
         e.preventDefault();
-        setHouseMsg(null);
         try {
             if (editingHouse) {
-                await api.patch(`/houses/${editingHouse.id}`, {
-                    houseNumber: houseForm.houseNumber,
-                    streetId: houseForm.streetId,
-                });
-                setHouseMsg({ type: 'success', text: 'House updated successfully!' });
+                await toast.promise(
+                    api.patch(`/houses/${editingHouse.id}`, {
+                        houseNumber: houseForm.houseNumber,
+                        streetId: houseForm.streetId,
+                    }),
+                    {
+                        loading: 'Updating house...',
+                        success: 'House updated successfully!',
+                        error: (err) => err.response?.data?.error || 'Failed to update house.'
+                    }
+                );
                 setEditingHouse(null);
             } else {
-                await api.post('/houses', houseForm);
-                setHouseMsg({ type: 'success', text: 'House created successfully!' });
+                await toast.promise(
+                    api.post('/houses', houseForm),
+                    {
+                        loading: 'Adding house...',
+                        success: 'House created successfully!',
+                        error: (err) => err.response?.data?.error || 'Failed to create house. Number might not be unique.'
+                    }
+                );
             }
             setHouseForm({ houseNumber: '', streetId: '' });
             refreshHouses();
         } catch (err) {
-            setHouseMsg({ type: 'error', text: err.response?.data?.error || 'Failed to save house.' });
+            console.error(err);
         }
     };
 
     const startEditHouse = (h) => {
         setEditingHouse(h);
         setHouseForm({ houseNumber: h.houseNumber || '', streetId: h.streetId || '' });
-        setHouseMsg(null);
     };
 
     const cancelEditHouse = () => {
         setEditingHouse(null);
         setHouseForm({ houseNumber: '', streetId: '' });
-        setHouseMsg(null);
     };
 
     const deleteHouse = async (id) => {
         if (!window.confirm('Delete this house? This may affect residents and bills linked to it.')) return;
         try {
-            await api.delete(`/houses/${id}`);
+            await toast.promise(
+                api.delete(`/houses/${id}`),
+                {
+                    loading: 'Deleting house...',
+                    success: 'House deleted successfully!',
+                    error: (err) => err.response?.data?.error || 'Failed to delete house.'
+                }
+            );
             refreshHouses();
         } catch (err) {
-            alert(err.response?.data?.error || 'Failed to delete house.');
+            console.error(err);
         }
     };
 
@@ -161,12 +192,6 @@ export default function Residents() {
                             {editingResident ? <Edit2 size={20} className="text-amber-500" /> : <UserPlus size={20} className="text-primary-500" />}
                             {editingResident ? `Edit: ${editingResident.fullName}` : 'Add Resident'}
                         </h3>
-
-                        {residentMsg && (
-                            <div className={`mb-4 px-4 py-2 rounded-lg text-sm font-medium ${residentMsg.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-                                {residentMsg.text}
-                            </div>
-                        )}
 
                         <form onSubmit={handleResidentSubmit} className="space-y-4">
                             <div>
@@ -306,12 +331,6 @@ export default function Residents() {
                             {editingHouse ? <Edit2 size={20} className="text-amber-500" /> : <PlusCircle size={20} className="text-primary-500" />}
                             {editingHouse ? `Edit House: ${editingHouse.houseNumber}` : 'Add House'}
                         </h3>
-
-                        {houseMsg && (
-                            <div className={`mb-4 px-4 py-2 rounded-lg text-sm font-medium ${houseMsg.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-                                {houseMsg.text}
-                            </div>
-                        )}
 
                         <form onSubmit={handleHouseSubmit} className="space-y-4">
                             <div>

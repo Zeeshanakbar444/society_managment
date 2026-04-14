@@ -3,8 +3,7 @@ import { useApi } from '../hooks/useApi';
 import { useAuth } from '../context/AuthContext';
 import { TrendingUp, Users, Home, AlertCircle, DollarSign, ArrowUpRight, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../lib/firebase';
-import api from '../lib/api';
+import { toast } from 'react-hot-toast';
 
 export default function Dashboard() {
     const { profile } = useAuth();
@@ -14,11 +13,17 @@ export default function Dashboard() {
     const handleSeed = async () => {
         if (!window.confirm("This will add demo streets, houses, and residents. Continue?")) return;
         try {
-            await api.post('/seed');
-            alert("Demo data seeded! Please refresh the page.");
-            window.location.reload();
+            await toast.promise(
+                api.post('/seed'),
+                {
+                    loading: 'Seeding demo data...',
+                    success: 'Demo data seeded! Refreshing...',
+                    error: (err) => "Seed failed: " + (err.response?.data?.error || err.message)
+                }
+            );
+            setTimeout(() => window.location.reload(), 1500);
         } catch (err) {
-            alert("Seed failed: " + (err.response?.data?.error || err.message));
+            console.error(err);
         }
     };
 

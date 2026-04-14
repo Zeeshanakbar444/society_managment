@@ -1,8 +1,7 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Get all billls
 router.get('/', async (req, res) => {
@@ -18,27 +17,50 @@ router.get('/', async (req, res) => {
 
 // Generate monthly bills for all houses
 router.post('/generate', async (req, res) => {
-    const { amount, dueDate, billingMonth } = req.body; // billingMonth as ISO string
+    const { amount, dueDate, billingMonth } = req.body;
     try {
         const houses = await prisma.house.findMany();
-        const billingDate = new Date(billingMonth);
-        billingDate.setDate(1); // Set to first of month
+        if (houses.length === 0) {
+            return res.status(400).json({ error: 'No houses found to generate bills for.' });
+        }
 
-        const bills = await Promise.all(
-            houses.map((house) =>
-                prisma.bill.create({
-                    data: {
-                        amount,
-                        dueDate: new Date(dueDate),
-                        billingMonth: billingDate,
-                        houseId: house.id,
-                    },
-                })
-            )
-        );
-        res.status(201).json({ message: `Generated ${bills.length} bills`, bills });
+        const billingDate = new Date(billingMonth);
+        billingDate.setDate(1);
+        billingDate.setHours(0, 0, 0, 0);
+
+        const due = new Date(dueDate);
+
+        // Check if bills already exist for this month to avoid duplicates
+        const existingBills = await prisma.bill.findFirst({
+            where: {
+                billingMonth: billingDate
+            }
+        });
+
+        if (existingBills) {
+            return res.status(400).json({ error: 'Bills for this month have already been generated.' });
+        }
+
+        const billData = houses.map((house) => ({
+            amount: amount,
+            dueDate: due,
+            billingMonth: billingDate,
+            houseId: house.id,
+            status: 'UNPAID'
+        }));
+
+        const result = await prisma.bill.createMany({
+            data: billData,
+            skipDuplicates: true,
+        });
+
+        res.status(201).json({
+            message: `Generated ${result.count} bills`,
+            count: result.count
+        });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error('Billing generation error:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 

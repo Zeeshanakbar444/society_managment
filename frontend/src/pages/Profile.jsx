@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 import { User, Mail, Phone, Home, Shield, Edit2, Save, X } from 'lucide-react';
 import api from '../lib/api';
 
@@ -17,12 +18,18 @@ export default function Profile() {
         e.preventDefault();
         setLoading(true);
         try {
-            await api.patch(`/residents/${profile.id}`, formData);
+            await toast.promise(
+                api.patch(`/residents/${profile.id}`, formData),
+                {
+                    loading: 'Updating profile...',
+                    success: 'Profile updated successfully!',
+                    error: 'Failed to update profile'
+                }
+            );
             setProfile({ ...profile, ...formData });
             setIsEditing(false);
-            alert('Profile updated successfully!');
         } catch (err) {
-            alert('Failed to update profile');
+            console.error(err);
         } finally {
             setLoading(false);
         }

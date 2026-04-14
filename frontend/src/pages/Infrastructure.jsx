@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApi } from '../hooks/useApi';
 import { Plus, Home, Map } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export default function Infrastructure() {
     const { data: streets, postData: addStreet, loading: streetsLoading } = useApi('streets');
@@ -12,15 +13,42 @@ export default function Infrastructure() {
     const handleAddStreet = async (e) => {
         e.preventDefault();
         if (!newStreet) return;
-        await addStreet({ name: newStreet });
-        setNewStreet('');
+
+        try {
+            await toast.promise(
+                addStreet({ name: newStreet }),
+                {
+                    loading: 'Adding street...',
+                    success: 'Street added successfully!',
+                    error: (err) => err.response?.data?.error || 'Failed to add street. Name might not be unique.'
+                }
+            );
+            setNewStreet('');
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     const handleAddHouse = async (e) => {
         e.preventDefault();
-        if (!newHouse.houseNumber || !newHouse.streetId) return;
-        await addHouse(newHouse);
-        setNewHouse({ houseNumber: '', streetId: '' });
+        if (!newHouse.houseNumber || !newHouse.streetId) {
+            toast.error('Please provide house number and select a street');
+            return;
+        }
+
+        try {
+            await toast.promise(
+                addHouse(newHouse),
+                {
+                    loading: 'Adding house...',
+                    success: 'House added successfully!',
+                    error: (err) => err.response?.data?.error || 'Failed to add house. Number might already exist.'
+                }
+            );
+            setNewHouse({ houseNumber: '', streetId: '' });
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     return (

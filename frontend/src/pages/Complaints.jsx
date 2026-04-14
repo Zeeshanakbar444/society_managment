@@ -3,6 +3,7 @@ import { useApi } from '../hooks/useApi';
 import { useAuth } from "../context/AuthContext";
 import api from '../lib/api';
 import { MessageSquare, AlertCircle, CheckCircle2, Clock, Send } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const statusIcons = {
     OPEN: <AlertCircle className="text-red-500" size={20} />,
@@ -22,23 +23,38 @@ export default function Complaints() {
     const [adminNotes, setAdminNotes] = useState({}); // keyed by complaint id
 
     const raiseComplaint = async (e) => {
+        // ...
         e.preventDefault();
         try {
-            await api.post('complaints', newComplaint);
+            await toast.promise(
+                api.post('complaints', newComplaint),
+                {
+                    loading: 'Sending complaint...',
+                    success: 'Complaint sent successfully!',
+                    error: (err) => err.response?.data?.error || "Failed to send complaint"
+                }
+            );
             setNewComplaint({ subject: '', description: '', houseId: '', userId: '' });
             refreshComplaints();
         } catch (err) {
-            alert(err.response?.data?.error || "Failed to send complaint");
+            console.error(err);
         }
     };
 
     const updateStatus = async (id, status) => {
         try {
-            await api.patch(`complaints/${id}/status`, { status, adminNote: adminNotes[id] || undefined });
+            await toast.promise(
+                api.patch(`complaints/${id}/status`, { status, adminNote: adminNotes[id] || undefined }),
+                {
+                    loading: 'Updating status...',
+                    success: 'Status updated successfully!',
+                    error: (err) => err.response?.data?.error || "Update failed"
+                }
+            );
             setAdminNotes(prev => ({ ...prev, [id]: '' }));
             refreshComplaints();
         } catch (err) {
-            alert(err.response?.data?.error || "Update failed");
+            console.error(err);
         }
     };
 

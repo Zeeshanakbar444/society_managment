@@ -12,11 +12,11 @@ import complaintRoutes from './routes/complaints.js';
 import seedRoutes from './routes/seed.js';
 
 import { verifyToken } from './middleware/auth.js';
+import prisma from './lib/prisma.js';
 
 dotenv.config();
 
 const app = express();
-const prisma = new PrismaClient();
 
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',

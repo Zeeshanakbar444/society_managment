@@ -1,6 +1,7 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
 import admin from 'firebase-admin';
+import { handlePrismaError } from '../lib/errorHandlers.js';
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
         });
         res.json(users);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return handlePrismaError(error, res, "Residents");
     }
 });
 
@@ -45,7 +46,7 @@ router.post('/', async (req, res) => {
         });
         res.status(201).json(user);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        return handlePrismaError(error, res, "Resident");
     }
 });
 
@@ -62,7 +63,7 @@ router.get('/:id', async (req, res) => {
         if (!user) return res.status(404).json({ error: 'User not found' });
         res.json(user);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return handlePrismaError(error, res, "Resident");
     }
 });
 
@@ -84,7 +85,7 @@ router.patch('/:id', async (req, res) => {
         });
         res.json(user);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        return handlePrismaError(error, res, "Resident");
     }
 });
 
@@ -107,7 +108,7 @@ router.delete('/:id', async (req, res) => {
 
         res.status(204).send();
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        return handlePrismaError(error, res, "Resident");
     }
 });
 

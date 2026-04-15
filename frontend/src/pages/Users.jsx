@@ -3,11 +3,13 @@ import api from "../lib/api";
 import { toast } from 'react-hot-toast';
 import { useState } from "react";
 import { useApi } from "../hooks/useApi";
+import ConfirmModal from "../components/ConfirmModal";
 
 const Users = () => {
   const { data: users, loading, refresh } = useApi('residents');
   const [editingUser, setEditingUser] = useState(null);
   const [updatedRole, setUpdatedRole] = useState("");
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const handleRefresh = async () => {
     await toast.promise(
@@ -42,21 +44,25 @@ const Users = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      try {
-        await toast.promise(
-          api.delete(`/residents/${id}`),
-          {
-            loading: 'Deleting user...',
-            success: 'User deleted successfully!',
-            error: (err) => err.response?.data?.error || 'Failed to delete user.',
-          }
-        );
-        refresh();
-      } catch (error) {
-        console.error("Error deleting user:", error);
-      }
+  const handleDelete = (id) => {
+    setUserToDelete(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!userToDelete) return;
+    try {
+      await toast.promise(
+        api.delete(`/residents/${userToDelete}`),
+        {
+          loading: 'Deleting user...',
+          success: 'User deleted successfully!',
+          error: (err) => err.response?.data?.error || 'Failed to delete user.',
+        }
+      );
+      setUserToDelete(null);
+      refresh();
+    } catch (error) {
+      console.error("Error deleting user:", error);
     }
   };
 
@@ -147,7 +153,7 @@ const Users = () => {
 
       {/* Edit Role Modal */}
       {editingUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-2">Update User Role</h2>
             <p className="text-gray-500 text-sm mb-6">
@@ -184,6 +190,14 @@ const Users = () => {
           </div>
         </div>
       )}
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={!!userToDelete}
+        onClose={() => setUserToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        title="Delete User"
+        message="Are you sure you want to delete this user? This action cannot be undone."
+      />
     </div>
   );
 };

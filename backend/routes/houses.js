@@ -1,5 +1,6 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
+import { handlePrismaError } from '../lib/errorHandlers.js';
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router.get('/', async (req, res) => {
         });
         res.json(houses);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return handlePrismaError(error, res, "Houses");
     }
 });
 
@@ -25,7 +26,7 @@ router.post('/', async (req, res) => {
         });
         res.status(201).json(house);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        return handlePrismaError(error, res, "House");
     }
 });
 
@@ -43,7 +44,7 @@ router.patch('/:id', async (req, res) => {
         });
         res.json(house);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        return handlePrismaError(error, res, "House");
     }
 });
 
@@ -53,7 +54,7 @@ router.delete('/:id', async (req, res) => {
         await prisma.house.delete({ where: { id: req.params.id } });
         res.status(204).send();
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        return handlePrismaError(error, res, "House");
     }
 });
 

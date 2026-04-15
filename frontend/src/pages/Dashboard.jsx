@@ -4,14 +4,22 @@ import { useAuth } from '../context/AuthContext';
 import { TrendingUp, Users, Home, AlertCircle, DollarSign, ArrowUpRight, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { useState } from 'react';
+import ConfirmModal from '../components/ConfirmModal';
+import api from '../lib/api';
 
 export default function Dashboard() {
     const { profile } = useAuth();
     const navigate = useNavigate();
     const isAdmin = profile?.role === 'ADMIN';
+    const [showSeedConfirm, setShowSeedConfirm] = useState(false);
 
-    const handleSeed = async () => {
-        if (!window.confirm("This will add demo streets, houses, and residents. Continue?")) return;
+    const handleSeed = () => {
+        setShowSeedConfirm(true);
+    };
+
+    const handleConfirmSeed = async () => {
+        setShowSeedConfirm(false);
         try {
             await toast.promise(
                 api.post('/seed'),
@@ -81,9 +89,9 @@ export default function Dashboard() {
                 <div className="lg:col-span-2 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-xl font-bold text-slate-800">{isAdmin ? 'Recent Activity' : 'Your Recent Complaints'}</h3>
-                        <button className="text-primary-600 text-sm font-bold hover:underline flex items-center gap-1">
+                        {/* <button className="text-primary-600 text-sm font-bold hover:underline flex items-center gap-1">
                             View All <ArrowUpRight size={14} />
-                        </button>
+                        </button> */}
                     </div>
                     <div className="space-y-6">
                         {userComplaints.slice(0, 5).map(c => (
@@ -110,7 +118,7 @@ export default function Dashboard() {
                             <button onClick={() => navigate('/billing')} className="w-full bg-white/10 hover:bg-white/20 py-3 rounded-xl transition-all text-left px-4 text-sm font-medium border border-white/10">Generate Bills</button>
                             <button onClick={() => navigate('/residents')} className="w-full bg-white/10 hover:bg-white/20 py-3 rounded-xl transition-all text-left px-4 text-sm font-medium border border-white/10">Add New Resident</button>
                             <button onClick={() => navigate('/infrastructure')} className="w-full bg-white/10 hover:bg-white/20 py-3 rounded-xl transition-all text-left px-4 text-sm font-medium border border-white/10">Update Infrastructure</button>
-                            <button onClick={handleSeed} className="w-full bg-amber-500/20 hover:bg-amber-500/30 py-3 rounded-xl transition-all text-left px-4 text-sm font-bold border border-amber-500/30 text-amber-200 mt-4">Seed Demo Data (Dropdowns)</button>
+                            {/* /<button onClick={handleSeed} className="w-full bg-amber-500/20 hover:bg-amber-500/30 py-3 rounded-xl transition-all text-left px-4 text-sm font-bold border border-amber-500/30 text-amber-200 mt-4">Seed Demo Data (Dropdowns)</button> */}
                         </div>
                     </div>
                 ) : (
@@ -124,6 +132,15 @@ export default function Dashboard() {
                     </div>
                 )}
             </div>
+            {/* Seed Confirmation Modal */}
+            <ConfirmModal
+                isOpen={showSeedConfirm}
+                onClose={() => setShowSeedConfirm(false)}
+                onConfirm={handleConfirmSeed}
+                title="Seed Demo Data"
+                message="This will add demo streets, houses, and residents to your database. This is usually done for testing purposes. Continue?"
+                confirmText="Seed Data"
+            />
         </div>
     );
 }

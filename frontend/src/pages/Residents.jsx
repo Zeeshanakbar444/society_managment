@@ -3,6 +3,7 @@ import { useApi } from '../hooks/useApi';
 import api from '../lib/api';
 import { UserPlus, User, Mail, Phone, Home as HomeIcon, Edit2, Trash2, PlusCircle, X, Check, Building2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import ConfirmModal from '../components/ConfirmModal';
 
 // ─── Residents Section ───────────────────────────────────────────────────────
 export default function Residents() {
@@ -19,6 +20,7 @@ export default function Residents() {
     // ── House form state ──
     const [houseForm, setHouseForm] = useState({ houseNumber: '', streetId: '' });
     const [editingHouse, setEditingHouse] = useState(null); // house object being edited
+    const [itemToDelete, setItemToDelete] = useState(null); // { type: 'resident' | 'house', id: string }
 
     const [activeTab, setActiveTab] = useState('residents'); // 'residents' | 'houses'
 
@@ -80,18 +82,30 @@ export default function Residents() {
         setResidentForm({ fullName: '', email: '', phoneNumber: '', password: '', residentType: 'OWNER', houseId: '' });
     };
 
-    const deleteResident = async (id) => {
-        if (!window.confirm('Delete this resident? All their complaints will also be removed.')) return;
+    const deleteResident = (id) => {
+        setItemToDelete({ type: 'resident', id });
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!itemToDelete) return;
+
+        const { type, id } = itemToDelete;
+        const endpoint = type === 'resident' ? `/residents/${id}` : `/houses/${id}`;
+        const loadingMsg = type === 'resident' ? 'Deleting resident...' : 'Deleting house...';
+        const successMsg = type === 'resident' ? 'Resident deleted successfully!' : 'House deleted successfully!';
+
         try {
             await toast.promise(
-                api.delete(`/residents/${id}`),
+                api.delete(endpoint),
                 {
-                    loading: 'Deleting resident...',
-                    success: 'Resident deleted successfully!',
-                    error: (err) => err.response?.data?.error || 'Failed to delete resident.'
+                    loading: loadingMsg,
+                    success: successMsg,
+                    error: (err) => err.response?.data?.error || `Failed to delete ${type}.`
                 }
             );
-            refreshResidents();
+            setItemToDelete(null);
+            if (type === 'resident') refreshResidents();
+            else refreshHouses();
         } catch (err) {
             console.error(err);
         }
@@ -142,21 +156,8 @@ export default function Residents() {
         setHouseForm({ houseNumber: '', streetId: '' });
     };
 
-    const deleteHouse = async (id) => {
-        if (!window.confirm('Delete this house? This may affect residents and bills linked to it.')) return;
-        try {
-            await toast.promise(
-                api.delete(`/houses/${id}`),
-                {
-                    loading: 'Deleting house...',
-                    success: 'House deleted successfully!',
-                    error: (err) => err.response?.data?.error || 'Failed to delete house.'
-                }
-            );
-            refreshHouses();
-        } catch (err) {
-            console.error(err);
-        }
+    const deleteHouse = (id) => {
+        setItemToDelete({ type: 'house', id });
     };
 
     // ─── Pill Tab Switch ────────────────────────────────────────────────────
@@ -407,6 +408,18 @@ export default function Residents() {
                     </section>
                 </div>
             )}
+            {/* Custom Delete Confirmation Modal */}
+            <ConfirmModal
+                isOpen={!!itemToDelete}
+                onClose={() => setItemToDelete(null)}
+                onConfirm={handleConfirmDelete}
+                title={itemToDelete?.type === 'resident' ? 'Delete Resident' : 'Delete House'}
+                message={
+                    itemToDelete?.type === 'resident'
+                        ? 'Are you sure you want to delete this resident? All their complaints will also be removed.'
+                        : 'Are you sure you want to delete this house? This may affect residents and bills linked to it.'
+                }
+            />
         </div>
     );
 }

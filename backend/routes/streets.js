@@ -1,5 +1,6 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
+import { handlePrismaError } from '../lib/errorHandlers.js';
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router.get('/', async (req, res) => {
         });
         res.json(streets);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return handlePrismaError(error, res, "Streets");
     }
 });
 
@@ -24,7 +25,7 @@ router.post('/', async (req, res) => {
         });
         res.status(201).json(street);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        return handlePrismaError(error, res, "Street");
     }
 });
 
